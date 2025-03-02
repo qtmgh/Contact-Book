@@ -235,45 +235,6 @@ def delete_contact():
     conn.commit()
     conn.close()
 
-def update_contact():
-    name = input("Enter the name of the contact to update: ")
-    conn = sqlite3.connect("contacts.db")
-    cursor = conn.cursor()
-
-    # Fetch current contact details
-    cursor.execute("SELECT contact_group, name, phone, email FROM contacts WHERE name = ?", (name,))
-    row = cursor.fetchone()
-
-    if not row: 
-        print("Contact not found.")
-        conn.close()
-        return
-    
-    group, name, phone, email = row
-    print(f"Current details: Group: {group}, Name: {name}, Phone: {phone}, Email: {email}")
-
-    # Get new details
-    new_phone = input("Enter new phone (10 digits): ")
-    while not (new_phone.isdigit() and len(new_phone) == 10):
-        print("Invalid phone number. Please enter 10 digits: ")
-        new_phone = input("Enter new phone (10 digits): ")
-    
-    new_email = input("Enter new email: ")
-    while '@' not in new_email:
-        print("Invalid email. Please include '@'.")
-        new_email = input("Enter new email: ")
-
-    # Update the contact
-    cursor.execute(""" UPDATE contacts
-                   SET phone = ?, email = ?
-                   WHERE name = ?
-                   """, (new_phone, new_email, name))
-    
-    # Commit changes and close the connection
-    conn.commit()
-    conn.close()
-    print(f"Contact '{name}' updated successfully.")
-
 def main(): 
     while True:
         print("\n=== Contact Book ====")
@@ -285,9 +246,8 @@ def main():
         print("6. Export Contacts")
         print("7. Import Contacts")
         print("8. Delete Contact")
-        print("9. Update Contact")
-        print("10. Edit Contact")
-        print("11. Exit")
+        print("9. Edit Contact")
+        print("10. Exit")
         choice = input("Enter your choice: ")
 
         if choice == "1":
@@ -307,10 +267,8 @@ def main():
         elif choice == "8":
             delete_contact()
         elif choice == "9":
-            update_contact()
-        elif choice == "10":
             edit_contact()
-        elif choice == "11":
+        elif choice == "10":
             print("Exiting...")
             break
         else:
