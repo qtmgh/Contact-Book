@@ -92,6 +92,36 @@ def search_contact():
     # Close the connection
     conn.close()
 
+def edit_contact():
+    conn = sqlite3.connect("contacts.db")
+    cursor = conn.cursor()
+    contact_id = input("Enter the ID of the contact to edit: ")
+    
+    # Fetch the current contact details
+    cursor.execute("SELECT * FROM contacts WHERE id = ?", (contact_id,))
+    contact = cursor.fetchone()
+    
+    if not contact:
+        print("Contact not found.")
+        return
+    
+    print(f"Current details: Name: {contact[1]}, Phone: {contact[2]}, Email: {contact[3]}, Group: {contact[4]}")
+    
+    # Get new details from the user
+    name = input("Enter new name (leave blank to keep current): ") or contact[1]
+    phone = input("Enter new phone (leave blank to keep current): ") or contact[2]
+    email = input("Enter new email (leave blank to keep current): ") or contact[3]
+    group = input("Enter new group (leave blank to keep current): ") or contact[4]
+    
+    # Update the contact in the database
+    cursor.execute("""
+    UPDATE contacts
+    SET name = ?, phone = ?, email = ?, contact_group = ?
+    WHERE id = ?
+    """, (name, phone, email, group, contact_id))
+    conn.commit()
+    print("Contact updated!")
+
 def save_contacts():
     conn = sqlite3.connect("contacts.db")
     cursor = conn.cursor()
@@ -256,7 +286,8 @@ def main():
         print("7. Import Contacts")
         print("8. Delete Contact")
         print("9. Update Contact")
-        print("10. Exit")
+        print("10. Edit Contact")
+        print("11. Exit")
         choice = input("Enter your choice: ")
 
         if choice == "1":
@@ -278,6 +309,8 @@ def main():
         elif choice == "9":
             update_contact()
         elif choice == "10":
+            edit_contact()
+        elif choice == "11":
             print("Exiting...")
             break
         else:
